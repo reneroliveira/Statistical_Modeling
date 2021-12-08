@@ -1,0 +1,505 @@
+
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[brazilian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fullpage}
+\usepackage{cancel}
+\usepackage{booktabs}
+\usepackage[top=2cm, bottom=4.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{mathrsfs}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{pgfplots}
+\usepackage[
+backend=bibtex,
+sorting=ynt
+]{biblatex}
+\addbibresource{refs.bib}
+
+\newtheorem{defi}{Definição}
+\newtheorem{teo}{Teorema}
+\newtheorem{prop}{Propriedade}
+\hypersetup{%
+	colorlinks=true,
+	linkcolor=blue,
+	linkbordercolor={0 0 1}
+}
+
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+
+\newcommand\course{Rener Oliveira}
+\newcommand\lcur{\mathcal{L}}
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\rr}{\mathbb{R}^2}
+\newcommand{\rn}{\mathbb{R}^n}
+\newcommand{\linesep}{{\color{black} \rule{\linewidth}{0.5mm} }}
+\newcommand{\rpos}{\mathbb{R}_{>0}}
+\newcommand{\blue}[1]{{\color{blue}{#1}}}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+\newcommand{\gt}{>}%broken keyboard
+\newcommand{\pow}{^}%broken keyboard
+\newcommand{\pr}{\operatorname{Pr}} %% probability
+\newcommand{\vr}{\operatorname{Var}} %% variance
+\newcommand{\rs}{X_1, X_2, \ldots, X_p} %%  random sample
+\newcommand{\irs}{X_1, X_2, \ldots} %% infinite random sample
+\newcommand{\rsd}{x_1, x_2, \ldots, x_p} %%  random sample, realised
+\newcommand{\Sm}{\bar{X}_n} %%  sample mean, random variable
+\newcommand{\sm}{\bar{x}_n} %%  sample mean, realised
+\newcommand{\Sv}{\bar{S}^2_n} %%  sample variance, random variable
+\newcommand{\sv}{\bar{s}^2_n} %%  sample variance, realised
+\newcommand{\bX}{\boldsymbol{X}} %%  random sample, contracted form (bold)
+\newcommand{\bx}{\boldsymbol{x}} %%  random sample, realised, contracted form (bold)
+\newcommand{\bT}{\boldsymbol{T}} %%  Statistic, vector form (bold)
+\newcommand{\bt}{\boldsymbol{t}} %%  Statistic, realised, vector form (bold)
+\newcommand{\emv}{\hat{\theta}_{\text{EMV}}}
+\newcommand{\defn}{\stackrel{\textrm{\scriptsize def}}{=}}
+\newcommand{\op}{\operatorname}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\norm}{\mathcal{N}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\iid}{\overset{\text{iid}}{\sim}}
+\pagestyle{fancyplain}
+\headheight 35pt        
+\chead{\textbf{\Large Inferência Causal em \\Séries Temporais}}
+\lhead{Modelagem Estatística\\Trabalho A2}
+\rhead{\small{\course \\ \today}}
+\lfoot{}
+\cfoot{}
+\rfoot{\small\thepage}
+\headsep 1.5em
+\usepackage{xcolor}
+\definecolor{maroon}{cmyk}{0, 0.87, 0.68, 0.32}
+\definecolor{halfgray}{gray}{0.55}
+\definecolor{ipython_frame}{RGB}{207, 207, 207}
+\definecolor{ipython_bg}{RGB}{247, 247, 247}
+\definecolor{ipython_red}{RGB}{186, 33, 33}
+\definecolor{ipython_green}{RGB}{0, 128, 0}
+\definecolor{ipython_cyan}{RGB}{64, 128, 128}
+\definecolor{ipython_purple}{RGB}{170, 34, 255}
+
+\usepackage{listings}
+\usepackage{color}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+	language=R,                     % the language of the code
+	basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+	numbers=left,                   % where to put the line-numbers
+	numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+	stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+	% will be numbered
+	numbersep=5pt,                  % how far the line-numbers are from the code
+	backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+	showspaces=false,               % show spaces adding particular underscores
+	showstringspaces=false,         % underline spaces within strings
+	showtabs=false,                 % show tabs within strings adding particular underscores
+	frame=single,                   % adds a frame around the code
+	rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+	tabsize=2,                      % sets default tabsize to 2 spaces
+	captionpos=b,                   % sets the caption-position to bottom
+	breaklines=true,                % sets automatic line breaking
+	breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+	title=\lstname,                 % show the filename of files included with \lstinputlisting;
+	% also try caption instead of title
+	keywordstyle=\color{blue},      % keyword style
+	commentstyle=\color{dkgreen},   % comment style
+	stringstyle=\color{mauve},      % string literal style
+	%escapeinside={\%*}{*)},         % if you want to add a comment within your code
+	morekeywords={*,...}            % if you want to add more keywords to the set
+} 
+\lstset{
+	breaklines=true,
+	%
+	extendedchars=true,
+	literate=
+	{á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+	{à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+	{À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+	{ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+	{Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+	{â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+	{Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+	{œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+	{ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+	{€}{{\EUR}}1 {£}{{\pounds}}1
+}
+
+%%
+%% Python definition (c) 1998 Michael Weber
+%% Additional definitions (2013) Alexis Dimitriadis
+%% modified by me (should not have empty lines)
+%%
+
+\begin{document}
+	\tableofcontents
+	\newpage
+	\section{Introdução}
+	
+	Inferência causal foi sem dúvida um dos assuntos de grande importância do curso. Vimos como diferentes estruturas causais intrínsecas do processo gerador de dados podem impactar no resultado de modelos estatísticos, podendo inclusive gerar falsas conclusões. 
+	
+	Os DAG's \textit{(Directed Acyclical Graphs)} são introduzidos de forma a esquematizar tais estruturas causais, e a partir deles decidimos quais variáveis incluir ou não em nossos modelos para que a saída represente de fato o efeito causal de interesse. 
+	
+	Este trabalho é um estudo sobre inferência causal no contexto de séries temporais. A ideia principal é a partir de dados temporais, conseguir recuperar o DAG que represente a estrutura causal do problema. Nos basearemos no artigo\cite{Peters2012phd}, que apresenta uma classe específica de modelos de equações estruturais (SEM\footnote{Structural Equation Models}) que os autores batizam de TiMINo (\textit{Time Series Models with Independent Noise}). Os autores apresentam um algoritmo para recuperar a estrutura do grafo baseado no modelo desenvolvido, e compararam a capacidade de recuperação diversos outros modelos, entre eles Granger-causalidade\cite{shay_2019} e LiNGAM (\textit{Linear Non-Gaussian Acyclic Model})\cite{tslingam}\cite{lingam}. O objetivo deste texto é apresentar com um pouco mais detalhadamente esses dois últimos métodos, e fazer um experimento simulado no final testando a influência de variáveis confundidoras nos algoritmos. Vamos agora introduzir a notação e conceitos iniciais deste texto.
+	
+	 Seja $V$ um conjunto finito de índices de tamanho $v$ e $i\in V$; nossos objetos de estudos serão séries temporais $(X_t^i)_{t\in\N}$. Denotaremos $\bd X_t$ como o vetor que armazena as realizações das $v$ séries temporais no tempo $t$. O \textbf{grafo temporal completo} é o grafo que contém cada observação de cada série como um nó, isto é, cada $X_t^i$ será um nó.
+	 
+	 Em um contexto com muitas séries e/ou muitas observações em cada uma delas, esse tipo de visualização fica inviável. Com isso definimos o \textbf{grafo temporal reduzido} que contém $v$ nós representando as séries $(X_t^i)_{t\in\N}$. Um aresta direcionada de $X^i$ para $X^j$ ($i\neq j$) é criada caso, para algum $k$ exista uma aresta de $X^i_{t-k}$ para $X^j_t$. Tais arestas direcionadas representariam causalidade. 
+	 
+	 O objetivo dos métodos que apresentaremos é de recuperar o grafo temporal reduzido a partir de observações $(\bd X_1,\ldots,\bd X_T)$ de uma série temporal multivariada.
+	 
+	 \section{Granger-Causalidade}
+	 
+	 Vamos introduzir agora o conceito de \textbf{Granger-Causalidade} (ou \textbf{G-causalidade}). Sejam $X^i$ e $X^j$ duas séries temporais. Denote por $\mathcal{U}_t=(U_{t-1},U_{t-2,\ldots})$ toda a informação do universo até o tempo $t$, e $X^i_{<t}=(X^i_{t-1},X^i_{t-2,\ldots})$ toda a informação de $X^i$ até o tempo $t$.
+	 
+	 Seja $\sigma^2(X^j_t|\mathcal{U}_t)$ a variância dos resíduos na predição de $X^j_t$ usando $\mathcal{U}_t$. Similarmente, denotemos por $\sigma^2(X^j_t|\mathcal{U}_t\backslash X^i_{<t})$ a variância dos resíduos na predição de $X^j_t$ usando toda a informação $\mathcal{U}_t$ exceto $X^i_{<t}$.
+	 
+	 \begin{defi}\textbf{(G-causalidade)}
+	 	Se $\sigma^2(X^j_t|\mathcal{U}_t)<\sigma^2(X^j_t|\mathcal{U}_t\backslash X^i_{<t})$ dizemos que $X^i$ \textbf{Granger-causa} (ou \textbf{G-causa}) $X^j$. Em outras palavras, $X^i$ G-causa $X^j$ se, dada todas as informações do universo, a remoção do passado de $X^i$ piora a predição de $X_j$.
+	 \end{defi}
+	 
+	 Na prática, é impossível ter acesso ao conjunto $\mathcal{U}_t$, então substituímos ele por $X^V_ {<t}=(X^1_{<t},X^2_{<t},\ldots,X^v_{<t})$, o conjunto de todas as séries disponíveis no estudo até o tempo $t$ (exclusive). Formalmente, dizemos que $X^i$ G-causa $X^j$ com respeito a $X^V_{<t}$, porém omitiremos tal sufixo neste texto e quando nos referirmos a Granger-causalidade $X^i\rightarrow X^j$ estará implícito que nosso universo é $X^V$. Perceba que estamos incluindo sempre o passado das variáveis causadoras, excluindo o próprio $t$ do sistema de causas, porém é possível fazer essa inclusão, o que gera a seguinte definição: %.teste\cite{lingam}..teste\cite{tslingam}
+	 
+	 \begin{defi}\label{inst}\textbf{(Causalidade instantânea)} 
+	 	Dizemos que duas séries $X^i$ e $X^j$ possuem causalidade instantânea, se para algum $t\in\N$, incluir $X^i_t$ no conjunto de informações preditoras, ajuda na predição de $X^j_t$. Usando a notação anterior, isto quer dizer que:
+	 	$$\sigma^2(X^j|\mathcal{U}_t\cup\{X^i_t\})<\sigma^2(X^j|\mathcal{U}_t)$$
+ 	 \end{defi}
+	 Note que quando definimos $\mathcal{U}_t$ excluímos as observações do universo no próprio tempo $t$, logo a definição é consistente. E novamente, em experimentos práticos $\mathcal{U}_t$ será substituído por $X^V_{<t}$.
+	 
+	 \textbf{Vetor Autorregressivo e G-causalidade linear}
+%	 - descrever VAR/teste/algoritmo se der
+%	 - Descrever ts-lingam
+%	 - descrever rapidamente timino algorithm
+%	 - testes
+
+	O modelo de Vetor Autorregressivo é um dos mais conhecidos em séries temporais e é abreviado por VAR (\textit{Vector Autoregression}). Se baseia na hipótese de linearidade entre $\bd X_t$ e as realizações passadas das séries $\bd X_{t-1},\bd X_{t-2},\ldots,\bd X_{t-p}$, onde $p$ é o lag máximo considerado. A G-causalidade linear, toma então como base o modelo VAR:
+	\begin{align}\label{var}\displaystyle\bd X_t=\sum_{\tau=1}^p\bd A(\tau)X_{t-\tau}+\bd N_t,\end{align}
+	Onde $\bd X_t,\bd N_t$ são vetores colunas representando as séries e o ruído (\textit{noise}) respectivamente, e $\bd A(\tau)$ é uma matriz quadrada de coeficientes com o mesmo número de linhas do vetor das séries. Algumas condições sobre o termo de ruído são necessárias como hipótese de modelo como média 0 e descorrelação entre $\bd N_t$ e $\bd N_{t-k}$ para todo $k$ inteiro positivo não nulo. A estimação das matrizes de coeficientes se dá por minimização quadrática multivariada.
+	
+	Para testar se $X^i$ G-causa $X^j$ nesse contexto, estima-se um modelo VAR completo usando todas as séries, e depois um modelo restrito que elimina $X^i$ da predição de $X^i_t$ dentro de $\bd X_t$ isso pode ser feito forçando a $i$-ésima coluna de $\bd A(\tau)=0$ para todo $\tau$ tal que $1\leq\tau\leq p$, com isso, as multiplicações $\bd A(\tau)X_{t-\tau}$ anularão a $i$-ésima entrada. Sendo $RSS_{full}$ a soma quadrática dos resíduos do modelo completo, e $RSS_{restr}$ a mesma medida para o modelo restrito sem $X^i$, utiliza-se a estatística abaixo para testar se a redução nos resíduos foi significante.
+	$$\dfrac{(RSS_{restr}-RSS_{full})/(p_{full}-p_{restr})}{RSS_{full}/(T-p_{full})},$$onde $T$ é o tamanho das séries da amostra, $p_{full}$ o número de parâmetros do modelo completo e $p_{restr}$ do modelo restrito. Tal estatística segue distribuição $F(p_{full}-p_{restr},T-p_{full})$, daí o teste depende do estabelecimento de um nível de significância para se comparar o quantil teórico da distribuição $F$ com a estatística apresentada acima, nos testes utilizaremos $\alpha=0.05$.
+	
+	Com isso é possível codificar um algoritmo que recupera a estrutura do DAG a partir da amostra de séries temporais. O autor do artigo\cite{Peters2012phd} disponibiliza seus scripts em R usados nos experimentos, No Apêndice \ref{appendix} apresentamos duas das funções que usaremos aqui. A função $\op{granger\_partial}$ testa se uma série G-causa outra, dada $\op{z}$ nosso universo. Já a função $\op{granger\_dag\_partial}$ recebe uma matriz de realizações de séries e aplica iterativamente a função $\op{granger\_partial}$ em cada par possível para retornar o DAG final. A quantidade de lags ($p$) para o modelo VAR é escolhida via critério de informação AIC dado o máximo pelo parâmetro $\op{max\_lag}$.
+	
+	Nosso artigo de referência apresenta ainda, extensões não-lineares que utilizam modelos mais complexos de séries temporais. Por aqui, trabalharemos apenas com o caso linear por simplicidade.
+	
+	\section{LiNGAM para séries temporais}
+	
+	O modelo LiNGAM (\textit{Linear Non-Gaussian Acyclic Model}) foi introduzido em \cite{lingam} para variáveis gerais, fora do contexto de séries temporais. Considere que variáveis observadas $x_i$, $i\in\{1,\ldots m\}$ possam ser reordenadas em uma ordem causal, isto é, que nenhum variável cause outra variável que a anteceda. Dessa forma é possível representar a estrutura causal com um DAG. Note que a possibilidade de tal ordenação exclui a possibilidade de presença de variáveis confundidoras. Seja então $k(i)$ a ordem causal da variável $x_i$. A modelagem proposta assume que $x_i$ é função linear das variáveis que a antecedem na ordem causal mais um erro $e_i$.
+	$$\displaystyle x_i=\sum_{k(j)<k(i)}b_{ij}x_j+e_i+c_i,$$
+	onde $c_i$ é uma constante, e os erros $e_i$'s são variáveis aleatórias independentes entre si, com distribuição não-gaussiana e variância não-nula. Tais propriedades inspiram o nome do modelo, que é linear, acíclico e não-gaussiano.
+	
+	As referências \cite{tslingam}\cite{tsling2} fazem as adaptações desse modelo no caso de séries temporais. Considerando nosso conjunto observacional de $v$ séries temporais $X^1,X^2,\ldots,X^v$ cada uma delas com tamanho $T$. Seja $\bd A(\tau)$ a matriz $v\times v$ dos efeitos causais entre as séries e o $\tau$-ésimo \textit{lag}, novamente restringindo $1\leq\tau \leq p$. Sendo $\bd X_t$ o vetor coluna de observações das $v$ séries no tempo $t$, a estrutura causal seguirá o modelo:
+	\begin{align}\label{ling}
+		\displaystyle \bd X_t=\sum_{\tau=0}^p \bd A(\tau)\bd X_{t-\tau}+\bd N_t
+	\end{align}
+	
+	Tau modelo difere de \ref{var} pela inclusão de $\tau=0$ na soma, permitindo a modelagem de causalidade instantânea segundo a Definição \ref{inst}. A matriz $\bd A(0)$ será a matriz de efeitos instantâneos. 
+	
+	Os ruídos $\bd N_t$ além de serem mutualmente independentes e temporalmente descorrelacionados, agora tem distribuição não-gaussiana, premissa que distingue tal modelo dos convencionais. Além disso, supondo que as entradas do vetor $\bd X_t$ estejam ordenadas por ordem causal, as matrizes $A(\tau)$ serão triangulares inferiores. Por exemplo, considere o caso de três séries $X^1,X^2,X^3$ onde a ordem causal é justamente $X^1\to X^2\to X^3$, sem efeitos instantâneos ($\bd A(0)\equiv0$) e $p=1$; Considere então uma estrutura temporal na qual $X^1_{t-1}\to X^2_{t}$ e $X^2_{t-1}\to X^3_{t}$ e $X^i_{t-1}\to X^i_{t}$ para $i=1,2,3$; teremos então um modelo no formato
+	$$\begin{bmatrix}X^1_t\\X^2_t\\X^3_t\end{bmatrix}=\bd A(1) \begin{bmatrix}X^1_{t-1}\\X^2_{t-1}\\X^3_{t-1}\end{bmatrix}+\bd N_t,$$
+	onde $\bd A(1)$ é do tipo:
+	$$\bd A(1)=\begin{bmatrix}
+		a_{11} & 0 & 0\\
+		a_{21} & a_{22} & 0\\
+		a_{31} & a_{32} & a_{33}
+	\end{bmatrix}$$
+	 A multiplicação nos dariam equações lineares conforme a modelagem proposta. O coeficiente $a_{ij}$ representa o efeito causal da série $j$ na série $i$ no tempo $t$ considerado.
+	 
+	 A existência de uma ordem causal garante então que se a ordem das entradas de $\bd X_t$ for aleatória, existe uma matriz de permutação $\bd P$ tal que $\bd P \bd A(\tau) \bd P^T$ seja triangular inferior. Sendo assim é possível recuperar a ordem causal via permutação das matrizes de coeficientes, se todas as hipóteses do modelo são satisfeitas. O autor de \cite{tsling2} disponibiliza seus códigos em R online \footnote{\href{https://sites.google.com/site/dorisentner/publications/VARLiNGAM}{https://sites.google.com/site/dorisentner/publications/VARLiNGAM}} e utiliza um algoritmo de força bruta neste caso, para obter uma permutação ótima e retornar a ordem causal.
+	 
+	 Vamos agora apresentar o método de estimação das matrizes de coeficientes:
+	 
+	 \textbf{Passo 1:} Estimar um modelo VAR (sem efeitos instantâneos) como abaixo utilizando implementações padrões de otimização quadrática:
+	 \begin{align}\label{p1}\displaystyle \bd X_t=\sum_{\tau=1}^{p}\bd M(\tau)\bd X_{t-\tau}+\bd n_t\end{align}
+	Denotemos por $\hat{\bd M}(\tau)$ as estimativas de matrizes obtidas.
+	
+	\textbf{Passo 2:} Estime os resíduos:
+	$$\hat{\bd n_t}=\bd X_t-\sum_{\tau=1}^{p}\hat{\bd M}(\tau)\bd X_{t-\tau}$$
+	
+	\textbf{Passo 3:} Estime $\bd A(0)$ com a solução do modelo de causalidade instantânea usando modelo LiNGAM:
+	$$\hat{\bd n_t}=\bd A(0)\hat{\bd n_t}+\hat{\bd N_t}$$
+	
+	\textbf{Passo 4:} Estimação de $\bd A(\tau),\tau>0$. De \ref{ling}, isolando $\bd X_t$ no primeiro membro, temos:
+	$$(\bd I-\bd A(0))\bd X_t=\sum_{\tau=1}^{p}\bd A(\tau)\bd X_{t-\tau}+\bd N_t,$$
+	com isso, multiplicando por $(\bd I-\bd A(0))^{-1}$ temos:
+	$$\bd X_t=\sum_{\tau=1}^p(\bd I-\bd A(0))^{-1}\bd A(\tau)\bd X_{t-\tau}+(\bd I-\bd A(0))^{-1}\bd N_t$$
+	
+	O passo 3 se justifica comparando $\hat{\bd n_t}$ de (\ref{p1}) com o termo de ruído $(\bd I-\bd A(0))^{-1}\bd N_t$
+	
+	O passo 4 consiste em estimar $\hat{\bd A}(\tau),\tau>0$ com a fórmula abaixo, que se justifica comparando (\ref{p1}) com os termos do somatório acima.
+	$$\hat{\bd A}(\tau)=(\bd I-\hat{\bd A}(0))\hat{\bd M}(\tau)$$
+	
+	Todo este processo está codificado nos scripts disponibilizados por \cite{tsling2}. 
+	
+	A interpretação de causalidade no caso deste modelo estende a noção de Granger, e inclui agora os efeitos instantâneos em $\bd A (0)$. Diremos que $X^i$ causa $X^j$ se pelo menos um dos coeficientes de $\bd A(\tau)$ na posição $(j,i)$ é significantemente diferente de zero para algum $\tau\geq 0$.
+	
+	\section{Causalidade TiMINo}
+	\begin{defi}\cite{Peters2012phd} \textbf{(TiMINo - Time Series model with Independent Noise)} Sejam as séries temporais $\bd X_t=(X^i_t)_{i\in V}$, dizemos que elas satisfazem um Modelo Temporal com Ruído Independente (TiMINo) se existe $p>0$ e $\forall i \in V$ existem conjuntos $\bd{PA}^i_0\subseteq X^{V\backslash \{i\}},\bd{PA}^{i}_{k}\subseteq X^{V}$ tais que, $\forall t$
+		\begin{align}\label{timino}
+			X^i_t=f_i((\bd{PA}^i_p)_{t-p},\ldots,(\bd{PA}^i_1)_{t-1},(\bd{PA}^i_0)_ t,N^i_t),
+		\end{align}
+	com $N^i_t$ conjuntamente independentes sobre $i$ e $t$ para todo $i$, e identicamente distribuídos em $t$.\end{defi}
+	
+	A notação $\bd{PA}^i$ vem do livro \cite{pearl2009causality} e quer dizer \textit{parents}, ou seja, nós que causam $i$ diretamente na estrutura do grafo. No caso $\bd{PA}^i_0$ é um conjunto de séries a serem tomadas de $X^{V\backslash \{i\}}$ como candidatas a efeitos causais. Dizer que $X^i_t=f_i((\bd{PA}^i_0)_t)$ é dizer que no tempo $t$ as séries de $\bd{PA}^i_0$ são causa instantânea de $X^i$. Os conjuntos $\bd{PA}^{i}_{k}$ são tomados sobre todo o espaço de séries como candidatos a efeitos com \textit{lags}. 
+	
+	Em resumo o que a expressão (\ref{timino}) diz é que em cada $t$ existem registros passados e possivelmente efeitos instantâneos que causam $X^i$ como função dessas causas mais um ruído independente.
+	
+	O \textbf{grafo temporal completo} consiste em setas partindo das estradas de $f_i$ e chegando em $X^i_t$. O Teorema 1 de \cite{Peters2012phd} discute sob que condições o grafo temporal reduzido é acíclico. Além disso o artigo propõe um algoritmo que recebe amostras de séries temporais e devolve o DAG estimado correspondente ao grafo temporal reduzido. A ideia é eleger uma classe de modelos $f_i$ e tentar ajustar um Modelo Temporal com Ruído Independente (TiMINo) nos dados; caso tal independência de ruídos não seja alcançável, o algoritmo não retorna nada, evitando conclusões incorretas. Segue abaixo o pseudocódigo:
+	
+	\textbf{Entradas:} 
+	\begin{itemize}
+		\item ($\bd X_1,\ldots,\bd X_T$): Amostras de uma série temporal $v$-dimensional de tamanho $T$ cada;
+		\item  $p$: ordem máxima dos \textit{lags};
+	\end{itemize}
+	Defina $S:=(1,\ldots,v)$
+	
+	\textbf{Enquanto} $\# S\neq1$ repita:
+	
+	------ \textbf{Para cada} $k$ em $S$ faça:
+	
+	------------ Estime um modelo TiMINo para $X^k_t$ usando $X^k_{t-p},\ldots,X^k_{t-1}$ e $X^i_{t-p},\ldots,X^i_{t-1}$ para $i\in S\backslash \{k\}$
+	
+	------------ Teste se os resíduos são independentes de $X^i,i\in S$ 
+	
+	 
+	------ Escolha $k^*$ como o $k$ com a menor medida de dependência. Caso não haja $k$ com independência, pare o algoritmo.
+	
+	------ Redefina $S:=S\backslash \{k^*\}$ e faça $pa(k^*):=S$
+	
+	Para cada $k$ remova todos os nós pais desnecessários para obter resíduos independentes.
+	\textbf{Saída:} $(pa(1),\ldots,pa(v))$
+	
+	 Para o ajuste do TiMINo devemos prover ao algoritmo um modelo de séries temporais, neste texto vamos nos restringir ao VAR. Para testar a independência entre os resíduos e as séries os autores propõe o HSIC (\textit{Hilbert-Schmidt independence criterion}) e um método de correlação cruzada,  que não detalharemos aqui. Na prática também passaremos como entrada uma significância $\alpha$ para esses testes.
+	 
+	 A codificação do algoritmo em R está disponível no site de um dos autores\footnote{\href{http://web.math.ku.dk/~peters/code.html}{http://web.math.ku.dk/~peters/code.html}}.
+	
+	
+	\section{Experimento: Influência de Confundidores}
+	Para testar os algoritmos apresentados, geramos o seguinte esquema temporal:
+	\begin{align*}
+		X^1_t &= 0.3X^1_{t-1}+N^1_t\\
+		X^2_t &= 0.8X^2_{t-1}+0.4X^1_{t-1}+N^2_t\\
+		X^3_t &= -0.6X^3_{t-1}+0.7X^1_{t-2}+N^3_t,
+	\end{align*}
+onde $N^i\sim \norm_T(0,\bd I),i=1,2,3$, ou seja o vetor de ruídos segue uma normal padrão multivariada independente. Graficamente podemos representar o grafo temporal completo (cortado em $t$) da seguinte forma:
+\begin{center}
+\begin{tikzcd}
+	& X^3_{t-1} \arrow[r]            & X^3_t   \\
+	X^1_{t-2} \arrow[rru] \arrow[r] & X^1_{t-1} \arrow[r] \arrow[rd] & X^1_{t} \\
+	& X^2_{t-1} \arrow[r]            & X^2_{t}
+\end{tikzcd}\end{center}
+
+o grafo temporal reduzido seria simplesmente $X^2\leftarrow X^1\rightarrow X^3$
+
+Abaixo segue o código em R de geração dos dados:
+
+\begin{lstlisting}[language=R]
+set.seed(1)
+T <- 1000
+X1 <- rep(0,T)
+X2 <- rep(0,T)
+X3 <- rep(0,T)
+
+N1 <- rnorm(T)
+N2 <- rnorm(T)
+N3 <- rnorm(T)
+
+for(t in 3:n)
+{
+	X1[t] <- 0.3*X1[t-1]+N1[t]
+	X2[t] <- 0.8*X2[t-1]+0.4*X1[t-1]+N2[t]
+	X3[t] <- -0.6*X3[t-1]+0.7*x1[t-2]+N3[t]
+}
+\end{lstlisting}
+
+A matriz de adjacência do grafo temporal reduzido segue abaixo, se $(i,j)=1$, $X^i$ causa $X^j$ no sentido apresentado na introdução.
+
+\begin{align}\label{realdag}
+	\text{DAG Real} = 
+	\begin{bmatrix}
+		0 & 1 & 1\\
+		0 & 0 & 0\\
+		0 & 0 & 0
+	\end{bmatrix}
+\end{align}
+
+Aplicamos então os algoritmos de G-causalidade, VAR-LiNGAM e TiMINo na amostra temporal $(\bd X_t)_{t=1,\ldots,T}$, com $\bd X_t=(X^1_t,X^2_t,X^3_t)$, na tentativa de recuperar a matriz de adjacência acima. O modelo LiNGAM não retorna diretamente o DAG, mas sim as matrizes de coeficientes autorregressivos $\bd A(\tau)$ e a ordem causal obtida a partir da permutação ótima. Note que ordens causais válidas neste caso seriam $X^1,X^2,X^3$ ou ainda $X^1,X^3,X^2$.
+
+Como não temos efeitos instantâneos, a matriz $\bd A(0)$ é identicamente nula, e no caso de $\bd A(1)$ e $\bd A(2)$ teremos:
+\begin{align*}
+	\bd A(1) = \begin{bmatrix}
+		0.3 & 0 & 0\\
+		0.4 & 0.8 & 0\\
+		0 & 0 & -0.6
+	\end{bmatrix},\bd A(2) = \begin{bmatrix}
+	0 & 0 & 0\\
+	0 & 0 & 0\\
+	0.7 & 0 & 0
+\end{bmatrix}
+\end{align*} 
+
+Abaixo segue a aplicação dos algoritmos utilizando as as funções disponibilizadas pelos autores.
+
+\begin{lstlisting}[language=R]
+granger_dag <- granger_dag_partial(cbind(X1,X2,X3),alpha = 0.05,max_lag = 2,output = FALSE)
+
+X_can <- tsdata2canonicalform(cbind(X1,X2,X3),2)
+lingam_model <- VARLiNGAM(X_can,"ols", pruning=FALSE,ntests=FALSE)
+timino_dag <- timino_dag(cbind(x1,x2,x3), alpha = 0.05, max_lag = 2, model = traints_linear, indtest = indtestts_hsic, output = TRUE)
+
+A0 <- lingam_model$Bhat[[1]]
+A1 <- lingam_model$Bhat[[2]]
+A2 <- lingam_model$Bhat[[3]]
+causal_order <- lingam_model$var_order
+\end{lstlisting}
+
+Os objetos \textit{granger\_dag} e \textit{timino\_dag} são diretamente as matrizes de adjacência. Em ambos os casos a matriz correta (\ref{realdag}) foi retornada. No caso do Modelo LiNGAM, a saída \textit{lingam\_model} contém vário objetos como as matrizes de coeficientes e ordem causal. As matrizes estimadas foram próximas das reais, apesar de os ruídos serem gaussianos quebrando uma das hipóteses deste modelo, o algoritmo exibe um aviso em relação à isso alertando que as matrizes não são aproximadamente triangulares\footnote{Ao trocar a distribuição dos ruídos para $\op{Uniforme}(-\frac12,\frac12)$) o aviso deixa de aparecer}:
+\begin{align*}
+	\hat{\bd A}(0) \approx \begin{bmatrix} 0 & 0 & 0 \\ 0.009 & 0 & 0.034 \\ 0.044 & 0 & 0 \end{bmatrix}, \hat{\bd A}(1)\approx \begin{bmatrix} 0.258 & -0.011 & 0.012 \\ 0.404 & 0.801 & 0.008 \\ -0.039 & -0.023 & -0.537 \end{bmatrix},\\ \hat{\bd A}(2) \approx \begin{bmatrix} -0.028 & -0.004 & 0.005 \\ 0.039 & 0.027 & -0.049 \\ 0.667 & -0.013 & 0.049 \end{bmatrix}
+\end{align*}
+
+Veja que $\hat{A}(0)$ é aproximadamente nula, e $\hat{\bd A}(1),\hat{\bd A}(2)$ são boas aproximações das matrizes reais dos coeficientes.
+
+o objeto \textit{causal\_order} retornou um vetor $1,2,3$ que é consistente com a ordem causal válida $X^1,X^2,X^3$. 
+
+Como observamos anteriormente, $X^1$ é uma variável confundidora. Supondo que que esta série não fosse observada, repetidos os mesmos experimentos, omitindo-a do conjunto de dados. O algoritmo de Granger infere de forma errônea que $X^2\to X^3$ e $X^3\to X^2$, isso pois incluir uma das séries ajuda a prever a outra por conta da variável latente $X^1$. O algoritmo VAR-LiNGAM não consegue recuperar os coeficientes e infere também erroneamente a ordem causal $X^3,X^2$. Já o algoritmo TiMINo, infere corretamente a matriz de adjacência nula $\begin{bmatrix}
+	0&0\\0&0
+\end{bmatrix}$. Abaixo segue o output gerado durante o processo de estimação. Ao dizer "\textit{fit 1 with the help of 2}" por exemplo, 1 está representando a primeira série, que no caso é $X^2$ e 2 representa a segunda série que é $X^3$. Ao tentar ajustar uma série usando outra, a hipótese de resíduos independentes foi rejeitada, mas ao ajustar as séries com seus próprios \textit{lags} (\textit{with the help of NOTHING}) a hipótese de ruídos independentes falha em ser rejeitada, e com isso os nós não são criados.
+
+\begin{lstlisting}
+	> timino_dag2 <- timino_dag(cbind(X2,X3), alpha = 0.05, max_lag = 2, model = traints_linear, indtest = indtestts_hsic, output = TRUE)
+	[1] "fit 1 with the help of 2 ..."
+	[1] "Independence rejected: p-value = 1.96550755421354e-05"
+	[1] "fit 2 with the help of 1 ..."
+	[1] "Modelling the first time series without any other leads to independent residuals."
+	[1] "Independence not rejected: p-value = 0.0500001"
+	[1] "Possible sink node found: 2"
+	[1] "causal order (beginning at sink): 2"
+	[1] "causal order (beginning at sink): 2 1"
+	[1] "removing unnecessary edges..."
+	[1] 1
+	[1] "...and performing final independence test using HSIC..."
+	[1] "fitting  2  with the help of NOTHING and testing independence against  1"
+	[1] "Test statistic: 0.549 and critical value: 0.742 and p-value 3.63e-01"
+	[1] "all correct..."
+	[1] "final summary time graph:"
+		  [,1] [,2]
+	[1,]    0    0
+	[2,]    0    0
+	> 
+\end{lstlisting}
+
+\section{Conclusão}
+	Este estudo teve como objetivo final mostrar a importância da análise causal em problemas estatísticos. No contexto de séries temporais, se ignorássemos a estrutura causal das séries e prosseguíssemos com a implementação de algoritmos padrões, poderíamos chegar em conclusões equivocadas caso a estrutura causal real do processo gerador de dados for diferente daquela que é assumida pelos modelos. A presença de variáveis confundidoras por exemplo pode afetar profundamente os processos de estimação, caso não sejam observadas.
+	
+	Apresentamos assim então três métodos de recuperação de DAG's a partir de amostras temporais, cada um deles com suas hipóteses e particularidades. Vimos que o TiMINo performou bem na presença de confundidores, evitando falsas conclusões. Existem adaptações não lineares desses métodos que não exploramos aqui, mas que dariam uma flexibilidade de ajuste maior à tais métodos. O intuito foi simplesmente estudar G-causalidade, modelo LiNGAM e o TiMINo, e por isso não nos preocupamos com essas generalizações.
+	
+	Como trabalho futuro seria interessante estudar as extensões não lineares desses algoritmos, e aplicá-los em dados reais com diferentes estruturas de causalidade e ruídos.
+
+	\newpage
+	\begin{appendix}
+		\section{Códigos}
+		\label{appendix}
+		Algoritmo que testa G-causalidade linear de duas séries $\op{x,y}$ com respeito ao conjunto universo $\op{(x,y,z)}$.
+		\begin{lstlisting}[language=R]
+granger_partial<-function(x,y,z,alpha,max_lag,output = FALSE)
+{
+	#tests, whether y is causing x given the information from z.
+	#mod_2 = mod_full
+	#mod_1 = mod_restr
+	#choose the order of mod_full to be the order of mod_restr 
+	
+	mod2_fit<-ar(cbind(x,y,z),aic=TRUE,order.max=max_lag)
+	order2<-max(mod2_fit$order,1)
+	mod_fit<-ar(cbind(x,z),aic=FALSE,order.max=order2)
+	order1<-max(mod_fit$order,1)
+	
+	r1<-mod_fit$resid[-c(1:order1),1]
+	r2<-mod2_fit$resid[-c(1:order2),1]
+	RSS1<-t(r1)%*%r1
+	RSS2<-t(r2)%*%r2
+	
+	dim_cond_set<-dim(z)[2]
+	if(length(z)==length(x)){dim_cond_set=1}
+	
+	T_num <- (RSS1-RSS2)/order2
+	T_den <- RSS2/(length(x)-((dim_cond_set+1)*order2+1))
+	T <- T_num/T_den
+	
+	quan <- qf(1-alpha,order2,length(x)-((dim_cond_set+1)*order2+1))
+	Tquan <- c(T,quan)
+	if(output)
+	{
+		show("test statistic and critical value are:")
+		show(Tquan)
+		if(Tquan[1]<Tquan[2])
+		{	
+			show("Thus, H0 (no reduction) is not rejected: 2nd var DOES NOT CAUSE 1st var.")
+		}
+		else
+		{
+			show("Thus, H0 (no reduction) is rejected: 2nd var CAUSES 1st var.")
+		}
+	}
+	Tquan <- Tquan
+	
+}
+		\end{lstlisting}
+	
+	Algoritmo que reconstroi DAG pelo método de G-causalidade linear
+	
+	\begin{lstlisting}[language=R]
+granger_dag_partial<-function(M,alpha,max_lag,output = TRUE)
+{
+	#M (nxp) should consists of p cols, each of which is the realization of one
+	#variable, that has n data points.
+	#(i,j)==1 in the answer matrix means causal link i->j
+	#(i,j)==0 in the answer matrix means no causal link i->j
+	np<-dim(M)
+	CC<-matrix(88,np[2],np[2])
+	for(i in 1:(np[2]-1))
+	{
+		for(j in (i+1):np[2])
+		{
+			Fc<-granger_partial(M[,j],M[,i],M[,-c(i,j)],alpha,max_lag, output)
+			ifelse(Fc[1]<Fc[2],
+			CC[i,j]<-0,
+			CC[i,j]<-1)
+			Fc<-granger_partial(M[,i],M[,j],M[,-c(i,j)],alpha,max_lag, output)
+			ifelse(Fc[1]<Fc[2],
+			CC[j,i]<-0,
+			CC[j,i]<-1)
+		}
+	}
+	return(CC)
+}
+	\end{lstlisting}
+Referência dos códigos de G-causalidade e TiMINo:
+
+\href{http://web.math.ku.dk/~peters/code.html}{http://web.math.ku.dk/~peters/code.html}
+
+Referência dos códigos do modelo VAR-LiNGAM:
+
+\href{https://sites.google.com/site/dorisentner/publications/VARLiNGAM}{https://sites.google.com/site/dorisentner/publications/VARLiNGAM}
+	\end{appendix}
+	
+%	 No \textbf{grafo temporal reduzido} dizemos neste contexto, que a série $X^i$ causa $X^j$ existe algum 
+	
+	\newpage
+	\addcontentsline{toc}{section}{Referências}
+%			\bibliography{refs}
+	\printbibliography
+\end{document}
