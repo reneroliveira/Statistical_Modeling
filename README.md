@@ -6,7 +6,7 @@ Courseworks from Statistical Modeling BSc 2021.1 subject of [EMAp/FGV](https://e
 
 - Analytical results
 - Manual implementation of bayesian estimation
-- Using PyMC3 to simulate coeficient's posterior distribution
+- Using PyMC3 to simulate coeficient's posterior distribution([jupyter notebook here](https://github.com/reneroliveira/Statistical_Modeling/blob/main/Bayesian%20Linear%20Regression/BayesianLinearRegression.ipynb))
 
 2. [Causal Inference in Time Series](https://github.com/reneroliveira/Statistical_Modeling/blob/main/Causal%20Inference%20in%20Time%20Series/causal_inference_time_series.pdf)
 
